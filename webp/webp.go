@@ -1,3 +1,4 @@
+// Package webp provides an idiomatic Go image API on top of libwebp bindings.
 package webp
 
 import (
@@ -17,6 +18,7 @@ func init() {
 	image.RegisterFormat("webp", "RIFF????WEBPVP8", Decode, DecodeConfig)
 }
 
+// Decode reads a WebP image from r and returns it as image.Image.
 func Decode(r io.Reader) (image.Image, error) {
 	b, err := io.ReadAll(r)
 	if err != nil {
@@ -43,6 +45,7 @@ func Decode(r io.Reader) (image.Image, error) {
 	return img, nil
 }
 
+// DecodeConfig returns image metadata for a WebP image from r.
 func DecodeConfig(r io.Reader) (image.Config, error) {
 	b, err := io.ReadAll(r)
 	if err != nil {
@@ -64,6 +67,7 @@ func DecodeConfig(r io.Reader) (image.Config, error) {
 	}, nil
 }
 
+// Encode writes src as WebP to w using the provided options.
 func Encode(w io.Writer, src image.Image, opts *EncodeOptions) error {
 	nrgba := toNRGBA(src)
 
@@ -90,6 +94,7 @@ func Encode(w io.Writer, src image.Image, opts *EncodeOptions) error {
 	return err
 }
 
+// EncodeLossless writes src as lossless WebP to w.
 func EncodeLossless(w io.Writer, src image.Image) error {
 	return Encode(w, src, &EncodeOptions{Lossless: true})
 }
