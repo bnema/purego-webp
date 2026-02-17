@@ -1,0 +1,292 @@
+{
+  "functions": [
+    {
+      "name": "WebPGetInfo",
+      "signature": "func(data *byte, dataSize uintptr, width *int32, height *int32) int32"
+    },
+    {
+      "name": "WebPDecodeRGBA",
+      "signature": "func(data *byte, dataSize uintptr, width *int32, height *int32) *byte"
+    },
+    {
+      "name": "WebPDecodeARGB",
+      "signature": "func(data *byte, dataSize uintptr, width *int32, height *int32) *byte"
+    },
+    {
+      "name": "WebPDecodeBGRA",
+      "signature": "func(data *byte, dataSize uintptr, width *int32, height *int32) *byte"
+    },
+    {
+      "name": "WebPDecodeRGB",
+      "signature": "func(data *byte, dataSize uintptr, width *int32, height *int32) *byte"
+    },
+    {
+      "name": "WebPDecodeBGR",
+      "signature": "func(data *byte, dataSize uintptr, width *int32, height *int32) *byte"
+    },
+    {
+      "name": "WebPDecodeRGBAInto",
+      "signature": "func(data *byte, dataSize uintptr, outputBuffer *byte, outputBufferSize uintptr, outputStride int32) *byte"
+    },
+    {
+      "name": "WebPDecodeARGBInto",
+      "signature": "func(data *byte, dataSize uintptr, outputBuffer *byte, outputBufferSize uintptr, outputStride int32) *byte"
+    },
+    {
+      "name": "WebPDecodeBGRAInto",
+      "signature": "func(data *byte, dataSize uintptr, outputBuffer *byte, outputBufferSize uintptr, outputStride int32) *byte"
+    },
+    {
+      "name": "WebPDecodeRGBInto",
+      "signature": "func(data *byte, dataSize uintptr, outputBuffer *byte, outputBufferSize uintptr, outputStride int32) *byte"
+    },
+    {
+      "name": "WebPDecodeBGRInto",
+      "signature": "func(data *byte, dataSize uintptr, outputBuffer *byte, outputBufferSize uintptr, outputStride int32) *byte"
+    },
+    {
+      "name": "WebPDecodeYUV",
+      "signature": "func(data *byte, dataSize uintptr, width *int32, height *int32, u **byte, v **byte, stride *int32, uvStride *int32) *byte"
+    },
+    {
+      "name": "WebPDecodeYUVInto",
+      "signature": "func(data *byte, dataSize uintptr, luma *byte, lumaSize uintptr, lumaStride int32, u *byte, uSize uintptr, uStride int32, v *byte, vSize uintptr, vStride int32) *byte"
+    },
+    {
+      "name": "WebPGetFeaturesInternal",
+      "signature": "func(data *byte, dataSize uintptr, features *WebPBitstreamFeatures, abiVersion int32) VP8StatusCode"
+    },
+    {
+      "name": "WebPInitDecBufferInternal",
+      "signature": "func(buffer *WebPDecBuffer, abiVersion int32) int32"
+    },
+    {
+      "name": "WebPFreeDecBuffer",
+      "signature": "func(buffer *WebPDecBuffer)"
+    },
+    {
+      "name": "WebPInitDecoderConfigInternal",
+      "signature": "func(config *WebPDecoderConfig, abiVersion int32) int32"
+    },
+    {
+      "name": "WebPValidateDecoderConfig",
+      "signature": "func(config *WebPDecoderConfig) int32"
+    },
+    {
+      "name": "WebPDecode",
+      "signature": "func(data *byte, dataSize uintptr, config *WebPDecoderConfig) VP8StatusCode"
+    },
+    {
+      "name": "WebPINewDecoder",
+      "signature": "func(outputBuffer *WebPDecBuffer) uintptr"
+    },
+    {
+      "name": "WebPINewRGB",
+      "signature": "func(csp int32, outputBuffer *byte, outputBufferSize uintptr, outputStride int32) uintptr"
+    },
+    {
+      "name": "WebPINewYUVA",
+      "signature": "func(luma *byte, lumaSize uintptr, lumaStride int32, u *byte, uSize uintptr, uStride int32, v *byte, vSize uintptr, vStride int32, a *byte, aSize uintptr, aStride int32) uintptr"
+    },
+    {
+      "name": "WebPINewYUV",
+      "signature": "func(luma *byte, lumaSize uintptr, lumaStride int32, u *byte, uSize uintptr, uStride int32, v *byte, vSize uintptr, vStride int32) uintptr"
+    },
+    {
+      "name": "WebPIDelete",
+      "signature": "func(idec uintptr)"
+    },
+    {
+      "name": "WebPIAppend",
+      "signature": "func(idec uintptr, data *byte, dataSize uintptr) VP8StatusCode"
+    },
+    {
+      "name": "WebPIUpdate",
+      "signature": "func(idec uintptr, data *byte, dataSize uintptr) VP8StatusCode"
+    },
+    {
+      "name": "WebPIDecGetRGB",
+      "signature": "func(idec uintptr, lastY *int32, width *int32, height *int32, stride *int32) *byte"
+    },
+    {
+      "name": "WebPIDecGetYUVA",
+      "signature": "func(idec uintptr, lastY *int32, u **byte, v **byte, a **byte, width *int32, height *int32, stride *int32, uvStride *int32, aStride *int32) *byte"
+    },
+    {
+      "name": "WebPIDecodedArea",
+      "signature": "func(idec uintptr, left *int32, top *int32, width *int32, height *int32) *WebPDecBuffer"
+    },
+    {
+      "name": "WebPIDecode",
+      "signature": "func(data *byte, dataSize uintptr, config *WebPDecoderConfig) uintptr"
+    },
+    {
+      "name": "WebPEncodeRGBA",
+      "signature": "func(rgba *byte, width int32, height int32, stride int32, quality float32, output **byte) uintptr"
+    },
+    {
+      "name": "WebPEncodeRGB",
+      "signature": "func(rgb *byte, width int32, height int32, stride int32, quality float32, output **byte) uintptr"
+    },
+    {
+      "name": "WebPEncodeBGR",
+      "signature": "func(bgr *byte, width int32, height int32, stride int32, quality float32, output **byte) uintptr"
+    },
+    {
+      "name": "WebPEncodeBGRA",
+      "signature": "func(bgra *byte, width int32, height int32, stride int32, quality float32, output **byte) uintptr"
+    },
+    {
+      "name": "WebPEncodeLosslessRGBA",
+      "signature": "func(rgba *byte, width int32, height int32, stride int32, output **byte) uintptr"
+    },
+    {
+      "name": "WebPEncodeLosslessRGB",
+      "signature": "func(rgb *byte, width int32, height int32, stride int32, output **byte) uintptr"
+    },
+    {
+      "name": "WebPEncodeLosslessBGR",
+      "signature": "func(bgr *byte, width int32, height int32, stride int32, output **byte) uintptr"
+    },
+    {
+      "name": "WebPEncodeLosslessBGRA",
+      "signature": "func(bgra *byte, width int32, height int32, stride int32, output **byte) uintptr"
+    },
+    {
+      "name": "WebPConfigInitInternal",
+      "signature": "func(config *WebPConfig, preset int32, quality float32, abiVersion int32) int32"
+    },
+    {
+      "name": "WebPConfigLosslessPreset",
+      "signature": "func(config *WebPConfig, level int32) int32"
+    },
+    {
+      "name": "WebPValidateConfig",
+      "signature": "func(config *WebPConfig) int32"
+    },
+    {
+      "name": "WebPMemoryWriterInit",
+      "signature": "func(writer *WebPMemoryWriter)"
+    },
+    {
+      "name": "WebPMemoryWriterClear",
+      "signature": "func(writer *WebPMemoryWriter)"
+    },
+    {
+      "name": "WebPMemoryWrite",
+      "signature": "func(data *byte, dataSize uintptr, picture *WebPPicture) int32"
+    },
+    {
+      "name": "WebPPictureInitInternal",
+      "signature": "func(picture *WebPPicture, abiVersion int32) int32"
+    },
+    {
+      "name": "WebPPictureAlloc",
+      "signature": "func(picture *WebPPicture) int32"
+    },
+    {
+      "name": "WebPPictureFree",
+      "signature": "func(picture *WebPPicture)"
+    },
+    {
+      "name": "WebPPictureCopy",
+      "signature": "func(src *WebPPicture, dst *WebPPicture) int32"
+    },
+    {
+      "name": "WebPPictureCrop",
+      "signature": "func(picture *WebPPicture, left int32, top int32, width int32, height int32) int32"
+    },
+    {
+      "name": "WebPPictureView",
+      "signature": "func(src *WebPPicture, left int32, top int32, width int32, height int32, dst *WebPPicture) int32"
+    },
+    {
+      "name": "WebPPictureIsView",
+      "signature": "func(picture *WebPPicture) int32"
+    },
+    {
+      "name": "WebPPictureRescale",
+      "signature": "func(picture *WebPPicture, width int32, height int32) int32"
+    },
+    {
+      "name": "WebPPictureImportRGB",
+      "signature": "func(picture *WebPPicture, rgb *byte, rgbStride int32) int32"
+    },
+    {
+      "name": "WebPPictureImportRGBA",
+      "signature": "func(picture *WebPPicture, rgba *byte, rgbaStride int32) int32"
+    },
+    {
+      "name": "WebPPictureImportRGBX",
+      "signature": "func(picture *WebPPicture, rgbx *byte, rgbxStride int32) int32"
+    },
+    {
+      "name": "WebPPictureImportBGR",
+      "signature": "func(picture *WebPPicture, bgr *byte, bgrStride int32) int32"
+    },
+    {
+      "name": "WebPPictureImportBGRA",
+      "signature": "func(picture *WebPPicture, bgra *byte, bgraStride int32) int32"
+    },
+    {
+      "name": "WebPPictureImportBGRX",
+      "signature": "func(picture *WebPPicture, bgrx *byte, bgrxStride int32) int32"
+    },
+    {
+      "name": "WebPPictureARGBToYUVA",
+      "signature": "func(picture *WebPPicture, colorspace int32) int32"
+    },
+    {
+      "name": "WebPPictureARGBToYUVADithered",
+      "signature": "func(picture *WebPPicture, colorspace int32, dithering float32) int32"
+    },
+    {
+      "name": "WebPPictureSharpARGBToYUVA",
+      "signature": "func(picture *WebPPicture) int32"
+    },
+    {
+      "name": "WebPPictureSmartARGBToYUVA",
+      "signature": "func(picture *WebPPicture) int32"
+    },
+    {
+      "name": "WebPPictureYUVAToARGB",
+      "signature": "func(picture *WebPPicture) int32"
+    },
+    {
+      "name": "WebPCleanupTransparentArea",
+      "signature": "func(picture *WebPPicture)"
+    },
+    {
+      "name": "WebPPictureHasTransparency",
+      "signature": "func(picture *WebPPicture) int32"
+    },
+    {
+      "name": "WebPBlendAlpha",
+      "signature": "func(picture *WebPPicture, backgroundRGB uint32)"
+    },
+    {
+      "name": "WebPPlaneDistortion",
+      "signature": "func(src *byte, srcStride uintptr, ref *byte, refStride uintptr, width int32, height int32, xStep uintptr, distType int32, distortion *float32, result *float32) int32"
+    },
+    {
+      "name": "WebPPictureDistortion",
+      "signature": "func(src *WebPPicture, ref *WebPPicture, metricType int32, result *float32) int32"
+    },
+    {
+      "name": "WebPEncode",
+      "signature": "func(config *WebPConfig, picture *WebPPicture) int32"
+    },
+    {
+      "name": "WebPFree",
+      "signature": "func(ptr uintptr)"
+    },
+    {
+      "name": "WebPGetDecoderVersion",
+      "signature": "func() int32"
+    },
+    {
+      "name": "WebPGetEncoderVersion",
+      "signature": "func() int32"
+    }
+  ]
+}

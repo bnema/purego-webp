@@ -1,4 +1,4 @@
-module github.com/jwijenbergh/purego-webp
+module github.com/bnema/purego-webp
 
 go 1.26
 
