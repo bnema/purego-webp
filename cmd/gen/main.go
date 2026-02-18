@@ -22,6 +22,7 @@ type specFunction struct {
 	Name      string `json:"name"`
 	Signature string `json:"signature"`
 	Symbol    string `json:"symbol,omitempty"`
+	Optional  bool   `json:"optional,omitempty"`
 }
 
 type tmplFunction struct {
@@ -32,6 +33,7 @@ type tmplFunction struct {
 	Results   string
 	Args      string
 	HasReturn bool
+	Optional  bool
 }
 
 type tmplData struct {
@@ -130,6 +132,7 @@ func parseFunction(sf specFunction) (tmplFunction, error) {
 		Results:   results,
 		Args:      args,
 		HasReturn: hasReturn,
+		Optional:  sf.Optional,
 	}, nil
 }
 

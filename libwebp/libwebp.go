@@ -25,6 +25,9 @@ var (
 	ErrInvalidStride = errors.New("libwebp: invalid stride")
 	// ErrBufferTooSmall indicates the destination buffer cannot hold output.
 	ErrBufferTooSmall = errors.New("libwebp: output buffer too small")
+	// ErrNotAvailable indicates the function is not available in the loaded
+	// libwebp version. Use the corresponding Available() helper to check first.
+	ErrNotAvailable = errors.New("libwebp: function not available in loaded library version")
 )
 
 // VP8StatusCode is the status enum used by libwebp decode APIs.
@@ -185,10 +188,21 @@ func WebPInitDecoderConfig(config *DecoderConfig) (ok bool, err error) {
 	return lowlevel.WebPInitDecoderConfigInternal(config, lowlevel.WebPDecoderABIVersion) != 0, nil
 }
 
+// WebPValidateDecoderConfigAvailable reports whether WebPValidateDecoderConfig
+// is available in the loaded libwebp. The symbol was added in libwebp 1.6.0
+// (released 2025-03); most distributions still ship an earlier version.
+func WebPValidateDecoderConfigAvailable() bool {
+	return lowlevel.ValidateDecoderConfigAvailable()
+}
+
 // WebPValidateDecoderConfig validates decoder config values.
+// It returns ErrNotAvailable if the loaded libwebp predates 1.6.0.
 func WebPValidateDecoderConfig(config *DecoderConfig) (ok bool, err error) {
 	if err := lowlevel.EnsureLoaded(); err != nil {
 		return false, err
+	}
+	if !lowlevel.ValidateDecoderConfigAvailable() {
+		return false, ErrNotAvailable
 	}
 	if config == nil {
 		return false, ErrInvalidData

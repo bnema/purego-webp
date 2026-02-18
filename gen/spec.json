@@ -70,7 +70,8 @@
     },
     {
       "name": "WebPValidateDecoderConfig",
-      "signature": "func(config *WebPDecoderConfig) int32"
+      "signature": "func(config *WebPDecoderConfig) int32",
+      "optional": true
     },
     {
       "name": "WebPDecode",

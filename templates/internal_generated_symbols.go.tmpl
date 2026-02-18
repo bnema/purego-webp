@@ -20,9 +20,13 @@ func {{ .Name }}{{ .Params }}{{ .Results }} {
 {{- end }}
 func registerAll(lib uintptr) error {
 {{- range .Functions }}
+{{- if .Optional }}
+	registerOptional(lib, &x{{ .Name }}, "{{ .Symbol }}")
+{{- else }}
 	if err := register(lib, &x{{ .Name }}, "{{ .Symbol }}"); err != nil {
 		return err
 	}
+{{- end }}
 {{- end }}
 
 	return nil

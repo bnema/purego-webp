@@ -345,9 +345,7 @@ func registerAll(lib uintptr) error {
 	if err := register(lib, &xWebPInitDecoderConfigInternal, "WebPInitDecoderConfigInternal"); err != nil {
 		return err
 	}
-	if err := register(lib, &xWebPValidateDecoderConfig, "WebPValidateDecoderConfig"); err != nil {
-		return err
-	}
+	registerOptional(lib, &xWebPValidateDecoderConfig, "WebPValidateDecoderConfig")
 	if err := register(lib, &xWebPDecode, "WebPDecode"); err != nil {
 		return err
 	}

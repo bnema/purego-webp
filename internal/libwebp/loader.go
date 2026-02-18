@@ -43,6 +43,22 @@ func register(lib uintptr, fnPtr interface{}, symbol string) error {
 	return nil
 }
 
+// registerOptional resolves symbol from lib and registers fnPtr if found.
+// Missing symbols are silently ignored; the function pointer is left nil.
+func registerOptional(lib uintptr, fnPtr interface{}, symbol string) {
+	addr, err := purego.Dlsym(lib, symbol)
+	if err != nil {
+		return
+	}
+	purego.RegisterFunc(fnPtr, addr)
+}
+
+// ValidateDecoderConfigAvailable reports whether WebPValidateDecoderConfig
+// was found in the loaded libwebp. It was added in libwebp 1.6.0 (2025-03).
+func ValidateDecoderConfigAvailable() bool {
+	return EnsureLoaded() == nil && xWebPValidateDecoderConfig != nil
+}
+
 func openLib() (uintptr, error) {
 	var errs []error
 	for _, name := range candidateLibNames() {
