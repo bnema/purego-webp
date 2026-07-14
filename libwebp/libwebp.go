@@ -7,6 +7,7 @@ package libwebp
 import (
 	"errors"
 	"fmt"
+	"math"
 	"unsafe"
 
 	lowlevel "github.com/bnema/purego-webp/internal/libwebp"
@@ -531,6 +532,12 @@ func WebPDecodeRGBAInto(data []byte, outputBuffer []byte, outputStride int) (wid
 	return decodeInto(data, outputBuffer, outputStride, 4, lowlevel.WebPDecodeRGBAInto)
 }
 
+// WebPDecodeRGBAIntoWithInfo decodes into a caller-provided RGBA buffer using
+// dimensions already validated by WebPGetInfo, avoiding a second parse.
+func WebPDecodeRGBAIntoWithInfo(data []byte, outputBuffer []byte, outputStride, width, height int) error {
+	return decodeIntoWithInfo(data, outputBuffer, outputStride, width, height, 4, lowlevel.WebPDecodeRGBAInto)
+}
+
 // WebPDecodeARGBInto decodes into a caller-provided ARGB buffer.
 func WebPDecodeARGBInto(data []byte, outputBuffer []byte, outputStride int) (width, height int, err error) {
 	return decodeInto(data, outputBuffer, outputStride, 4, lowlevel.WebPDecodeARGBInto)
@@ -695,7 +702,6 @@ func decodeInto(data []byte, outputBuffer []byte, outputStride int, bytesPerPixe
 	if len(outputBuffer) == 0 {
 		return 0, 0, ErrBufferTooSmall
 	}
-
 	w, h, ok, err := WebPGetInfo(data)
 	if err != nil {
 		return 0, 0, err
@@ -703,20 +709,37 @@ func decodeInto(data []byte, outputBuffer []byte, outputStride int, bytesPerPixe
 	if !ok {
 		return 0, 0, ErrInvalidData
 	}
-	if outputStride < w*bytesPerPixel {
-		return 0, 0, ErrInvalidStride
+	if err := decodeIntoWithInfo(data, outputBuffer, outputStride, w, h, bytesPerPixel, fn); err != nil {
+		return 0, 0, err
 	}
-	required := outputStride * h
-	if len(outputBuffer) < required {
-		return 0, 0, ErrBufferTooSmall
-	}
-
-	ptr := fn(&data[0], uintptr(len(data)), &outputBuffer[0], uintptr(len(outputBuffer)), int32(outputStride))
-	if ptr == nil {
-		return 0, 0, ErrDecodeFailed
-	}
-
 	return w, h, nil
+}
+
+func decodeIntoWithInfo(data []byte, outputBuffer []byte, outputStride, width, height, bytesPerPixel int, fn decodeIntoFunc) error {
+	if err := lowlevel.EnsureLoaded(); err != nil {
+		return err
+	}
+	if len(data) == 0 {
+		return ErrInvalidData
+	}
+	if len(outputBuffer) == 0 {
+		return ErrBufferTooSmall
+	}
+	minimumStride, _, err := checkedDecodeLayout(width, height, bytesPerPixel)
+	if err != nil {
+		return err
+	}
+	if outputStride < minimumStride || outputStride > math.MaxInt32 {
+		return ErrInvalidStride
+	}
+	required, ok := checkedProduct(outputStride, height)
+	if !ok || len(outputBuffer) < required {
+		return ErrBufferTooSmall
+	}
+	if fn(&data[0], uintptr(len(data)), &outputBuffer[0], uintptr(len(outputBuffer)), int32(outputStride)) == nil {
+		return ErrDecodeFailed
+	}
+	return nil
 }
 
 func decodeToOwnedBuffer(data []byte, bytesPerPixel int, fn decodeFunc) (pix []byte, width, height, stride int, err error) {
@@ -736,12 +759,10 @@ func decodeToOwnedBuffer(data []byte, bytesPerPixel int, fn decodeFunc) (pix []b
 
 	width = int(w)
 	height = int(h)
-	if width <= 0 || height <= 0 {
-		return nil, 0, 0, 0, ErrInvalidDimension
+	stride, bufLen, err := checkedDecodeLayout(width, height, bytesPerPixel)
+	if err != nil {
+		return nil, 0, 0, 0, err
 	}
-
-	stride = width * bytesPerPixel
-	bufLen := stride * height
 	pix = make([]byte, bufLen)
 	copy(pix, unsafe.Slice(ptr, bufLen))
 
@@ -795,17 +816,45 @@ func encodeLossless(pix []byte, width, height, stride, bytesPerPixel int, fn enc
 }
 
 func validatePixelInput(pix []byte, width, height, stride, bytesPerPixel int) error {
-	if width <= 0 || height <= 0 {
-		return ErrInvalidDimension
+	minimumStride, _, err := checkedDecodeLayout(width, height, bytesPerPixel)
+	if err != nil {
+		return err
 	}
-	if stride < width*bytesPerPixel {
+	if stride < minimumStride || stride > math.MaxInt32 {
 		return ErrInvalidStride
 	}
-	required := stride * height
+	required, ok := checkedProduct(stride, height)
+	if !ok {
+		return ErrInvalidDimension
+	}
 	if len(pix) < required {
 		return fmt.Errorf("libwebp: pixel buffer too small: got=%d need>=%d", len(pix), required)
 	}
 	return nil
+}
+
+// checkedDecodeLayout validates the dimensions and packed output layout before
+// values are passed to libwebp, whose output stride parameter is a C int.
+func checkedDecodeLayout(width, height, bytesPerPixel int) (stride, size int, err error) {
+	if width <= 0 || height <= 0 {
+		return 0, 0, ErrInvalidDimension
+	}
+	if bytesPerPixel <= 0 || width > math.MaxInt32/bytesPerPixel {
+		return 0, 0, ErrInvalidStride
+	}
+	stride = width * bytesPerPixel
+	size, ok := checkedProduct(stride, height)
+	if !ok {
+		return 0, 0, ErrInvalidDimension
+	}
+	return stride, size, nil
+}
+
+func checkedProduct(a, b int) (int, bool) {
+	if a < 0 || b < 0 || (a != 0 && b > int(^uint(0)>>1)/a) {
+		return 0, false
+	}
+	return a * b, true
 }
 
 // WebPIsPremultipliedMode reports whether the decode colorspace is premultiplied.
