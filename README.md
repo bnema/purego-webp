@@ -1,6 +1,6 @@
 # purego-webp
 
-Pure Go bindings for `libwebp` using [purego](https://github.com/ebitengine/purego), with a C-first API and an idiomatic Go wrapper API.
+Pure Go bindings for `libwebp` using [purego](https://github.com/bnema/purego), with a C-first API and an idiomatic Go wrapper API.
 
 ## Goals
 

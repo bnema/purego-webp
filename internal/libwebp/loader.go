@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/ebitengine/purego"
+	"github.com/bnema/purego"
 )
 
 var (
