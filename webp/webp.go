@@ -2,9 +2,11 @@
 package webp
 
 import (
+	"errors"
 	"image"
 	"image/color"
 	"io"
+	"math"
 
 	"github.com/bnema/purego-webp/libwebp"
 )
@@ -13,6 +15,10 @@ type EncodeOptions struct {
 	Quality  float32
 	Lossless bool
 }
+
+const maxDecodedImageBytes = 1 << 30
+
+var errDecodedImageTooLarge = errors.New("webp: decoded image exceeds size limit")
 
 func init() {
 	image.RegisterFormat("webp", "RIFF????WEBPVP8", Decode, DecodeConfig)
@@ -25,23 +31,28 @@ func Decode(r io.Reader) (image.Image, error) {
 		return nil, err
 	}
 
-	pix, w, h, stride, err := libwebp.WebPDecodeRGBA(b)
+	w, h, ok, err := libwebp.WebPGetInfo(b)
 	if err != nil {
 		return nil, err
 	}
+	if !ok {
+		return nil, libwebp.ErrInvalidData
+	}
+	stride, size, err := decodeNRGBALayout(w, h)
+	if err != nil {
+		return nil, err
+	}
+	if size > maxDecodedImageBytes {
+		return nil, errDecodedImageTooLarge
+	}
 
 	img := image.NewNRGBA(image.Rect(0, 0, w, h))
-	if stride == img.Stride {
-		copy(img.Pix, pix)
-		return img, nil
+	if img.Stride != stride || len(img.Pix) != size {
+		return nil, errDecodedImageTooLarge
 	}
-
-	for y := 0; y < h; y++ {
-		srcStart := y * stride
-		dstStart := y * img.Stride
-		copy(img.Pix[dstStart:dstStart+img.Stride], pix[srcStart:srcStart+img.Stride])
+	if err := libwebp.WebPDecodeRGBAIntoWithInfo(b, img.Pix, img.Stride, w, h); err != nil {
+		return nil, err
 	}
-
 	return img, nil
 }
 
@@ -97,6 +108,22 @@ func Encode(w io.Writer, src image.Image, opts *EncodeOptions) error {
 // EncodeLossless writes src as lossless WebP to w.
 func EncodeLossless(w io.Writer, src image.Image) error {
 	return Encode(w, src, &EncodeOptions{Lossless: true})
+}
+
+// decodeNRGBALayout verifies the Go allocation and C int stride constraints
+// without allocating the output buffer.
+func decodeNRGBALayout(width, height int) (stride, size int, err error) {
+	if width <= 0 || height <= 0 {
+		return 0, 0, libwebp.ErrInvalidDimension
+	}
+	if width > math.MaxInt32/4 {
+		return 0, 0, libwebp.ErrInvalidStride
+	}
+	stride = width * 4
+	if height > int(^uint(0)>>1)/stride {
+		return 0, 0, libwebp.ErrInvalidDimension
+	}
+	return stride, stride * height, nil
 }
 
 func toNRGBA(src image.Image) *image.NRGBA {
